@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: production_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./production_db:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+
+  analytics_db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: analytics_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./analytics_db:/docker-entrypoint-initdb.d
+    ports:
+      - 5433:5432
+
+  web_app:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - 5000:5000
+    environment:
+      - PROD_DB_NAME=production_db
+      - PROD_DB_USER=postgres
+      - PROD_DB_PASSWORD=postgres
+      - PROD_DB_HOST=db
+      - ANALYTICS_DB_NAME=analytics_db
+      - ANALYTICS_DB_USER=postgres
+      - ANALYTICS_DB_PASSWORD=postgres
+      - ANALYTICS_DB_HOST=analytics_db
+    depends_on:
+      - db
+      - analytics_db
