@@ -1,23 +1,15 @@
 import unittest
 from flask_testing import TestCase
-from main import get_all_user_hobbies_customer, get_user_hobbies_per_year_customer, get_all_count_user_hobbies_per_year
 from schemas.analytics_db import UserHobby, db
-from flask import Flask
+from main import app
 
 
 class TestFlaskApi(TestCase):
     def create_app(self):
-        app = Flask(__name__)
         app.config['TESTING'] = True
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         db.init_app(app)
-
-        app.add_url_rule('/', 'get_all_user_hobbies', get_all_user_hobbies_customer, methods=['GET'])
-        app.add_url_rule('/<int:join_year>', 'get_user_hobbies_per_year', get_user_hobbies_per_year_customer,
-                         methods=['GET'])
-        app.add_url_rule('/count/<int:join_year>', 'get_all_count_user_hobbies_per_year',
-                         get_all_count_user_hobbies_per_year, methods=['GET'])
 
         return app
 
